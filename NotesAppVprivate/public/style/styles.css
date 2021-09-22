@@ -1,0 +1,93 @@
+
+body {
+  background-image: url("../../public/img/background.jpg");
+    
+}
+
+
+.container a{
+  text-decoration: none;
+}
+
+li {
+  list-style-type: none;
+}
+
+
+.container {
+  font-family: 'Montserrat', sans-serif;
+}
+
+
+/*Navbar*/
+
+.logo:hover, .logo-text:hover {
+    -webkit-transform:scale(1.10);
+  -moz-transform:scale(1.10);
+  -ms-transform:scale(1.10);
+  -o-transform:scale(1.10);
+  transform:scale(1.10);
+}
+
+.logo-text {
+  font-family: 'Allison', cursive;
+  font-size: 3em;
+  color: black;
+}
+
+
+
+.nav-link:hover {
+    -webkit-transform:scale(1.10);
+  -moz-transform:scale(1.10);
+  -ms-transform:scale(1.10);
+  -o-transform:scale(1.10);
+  transform:scale(1.10);
+}
+
+/* Startseite*/
+
+.start-container {
+   position: relative;
+}
+
+.start-text {
+ 
+  font-family: 'Permanent Marker', cursive;
+  font-size: 5em;
+  color: rgb(66, 65, 65);
+  /* Center vertically and horizontally */
+  position: absolute;
+  top: 55%;
+  left: 15%;
+  margin: -25px 0 0 -25px; 
+  /* apply negative top and left margins to truly center the element */
+}
+
+/*Formulare Styling*/
+
+.shadow-css {
+  background-color: whitesmoke;
+
+  background: rgba( 255, 255, 255, 0.65 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 4px );
+  -webkit-backdrop-filter: blur( 4px );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+  border-radius: 0.8em;
+}
+
+/* Buttons */
+
+.sub-btn {
+  background-color: #99bfc0 !important;
+  color: white !important;
+}
+
+.sub-btn:hover {
+  background-color:  #5b6f70 !important;;
+}
+
+
+
