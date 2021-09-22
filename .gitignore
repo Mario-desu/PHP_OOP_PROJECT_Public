@@ -1,2 +1,5 @@
+includes/
+
 email_connect.php
 database.php
+recaptcha.php

@@ -58,19 +58,28 @@ class LoginService
         try {
             //Server settings
 
-            //Connection data in seperate file:
+            //Connection data in include_Datei:
 
-            include("../includes/email_connection.php");
+            include("../includes/email_connect.php");
+            ################### kommt von include ##############################################
+            // $mail->isSMTP();                                            //Send using SMTP
+            // $mail->Host       = '***********';                     //Set the SMTP server to send through
+            // $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+            // $mail->Username   = '***********';                     //SMTP username
+            // $mail->Password   = '*************';                               //SMTP password                                
+            // //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+            ##########################################################################################
+    
 
 
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
             $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
             //Recipients
-            $mail->setFrom('****************');
+            // $mail->setFrom('****************'); kommt von include
             $mail->addAddress($email);     //Add a recipient
 
-            $mail->addReplyTo('*************');
+            
             
             //encode email
             $emailEncode = base64_encode(urlencode($email));
@@ -83,7 +92,7 @@ class LoginService
             $mail->Subject = '[Notes] Verifiziere bitte deine Mail-Adresse';
             $mail->Body    = '<p><b>Hallo ' . $firstName . '</b></p><br><br>
                               <p>Bitte bestätige deine E-Mail-Adresse um die Registrierung abzuschließen.</p><br>
-                              <p>Klicke diesen Link oder kopiere ihn in den Browser in den nächsten 20 Minuten <a href= "' . $url .'">' . $url .'</a>.</p>';
+                              <p>Klicke diesen Link oder kopiere ihn in den Browser in den nächsten 20 Minuten <br><a href= "' . $url .'">' . $url .'</a>.</p>';
 
             $mail->AltBody = 'Bitte bestätige deine E-Mail-Adresse um die Registrierung abzuschließen. Bitte kopiere den Link in den Browser https://orf.at.';
 

@@ -408,10 +408,13 @@ class LoginController extends AbstractController
         $zustimmungAGB="";
         $zustimmungDatenschutz="";
 
+        //getting recaptcha from include
+
+        include("../includes/recaptcha.php");
         
-        $publicKeyRecaptcha = "6LdPEkAcAAAAANcqit_xc-YmwODOQ7E_Hjpeqk7x";
-        $secretKeyRecaptcha ="6LdPEkAcAAAAAIz7zXqM6sfOy5bbFsPQyC0Bc5xZ";
-        $recaptchaUrl = "https://www.google.com/recaptcha/api/siteverify";
+        // $publicKeyRecaptcha = "**********************";
+        // $secretKeyRecaptcha ="***********************";
+        // $recaptchaUrl = "https://www.google.com/recaptcha/api/siteverify";
             
         $ok=true;
         $message="";
