@@ -57,12 +57,12 @@ class LoginService
 
         try {
             //Server settings
-            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-            $mail->isSMTP();                                            //Send using SMTP
-            $mail->Host       = 'smtp.ionos.de';                     //Set the SMTP server to send through
-            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-            $mail->Username   = '********';                     //SMTP username
-            $mail->Password   = '******';                               //SMTP password
+
+            //Connection data in seperate file:
+
+            include("../includes/email_connection.php");
+
+
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
             $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 

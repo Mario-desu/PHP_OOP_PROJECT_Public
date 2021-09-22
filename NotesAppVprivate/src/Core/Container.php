@@ -95,11 +95,15 @@ class Container
 
       'pdo' => function() {
 
-        $host_name = 'localhost';
-        $database = 'notes2';
-        $user_name = 'root';
-        $password = '****';
-        $pdo = null;
+        // $host_name = 'localhost';
+        // $database = '****';
+        // $user_name = 'root';
+        // $password = '****';
+        // $pdo = null;
+
+        //db-connection in separate file:
+
+        include("../includes/database.php");
 
         // damit Passwort nicht angezeigt wird:
         try {$pdo = new PDO(
