@@ -74,21 +74,23 @@ class LoginRepository extends AbstractRepository
 ###########################################################################################
 // für Registrierung: einfügen von Userdaten in Datenbank
 
-    public function insertUser($lastName, $firstName, $role, $email, $password1) {
+    public function insertUser($lastName, $firstName, $role, $email, $password1, $selector, $token) {
         $table = $this->getTableName();
 
-        $stmt = $this->pdo->prepare("INSERT INTO $table (lastName,firstName,role,email,password)
-        VALUES (:lastName,:firstName,:role,:email,:password)");
+        $stmt = $this->pdo->prepare("INSERT INTO $table (lastName,firstName,role,email,password, selector, token)
+        VALUES (:lastName, :firstName, :role, :email, :password, :selector, :token)");
 
         $stmt->bindParam(":lastName",$lastName); 
         $stmt->bindParam(":firstName",$firstName); 
         $stmt->bindParam(":role",$role); 
         $stmt->bindParam(":email",$email);
         $stmt->bindParam(":password",$password1);
+        $stmt->bindParam(":selector",$selector);
+        $stmt->bindParam(":token",$token);
         $stmt->execute();
     }
 
- ###########################################################################################
+ ######################################################################################
  // für User-Edit: Änderung von Userdaten: 
 
         public function updateUser(LoginModel $model) 
@@ -102,6 +104,25 @@ class LoginRepository extends AbstractRepository
         $stmt->bindParam(":firstName", $model->firstName);
         $stmt->bindParam(":email", $model->email);
         $stmt->bindParam(":role", $model->role);       
+        $stmt->execute();
+        }    
+
+ ######################################################################################
+ // um User-Status auf aktiv zu setzen: 
+
+        public function setUserActive($email, $selector, $token) 
+        {
+        $table = $this->getTableName();
+        $stmt = $this->pdo->prepare("UPDATE `$table` SET `role` = :role
+        WHERE `email` = :email AND `selector` = :selector AND `token` = :token");
+
+        $role = "user";
+        
+        $stmt->bindParam(":role", $role);
+        $stmt->bindParam(":email", $email);
+        $stmt->bindParam(":selector", $selector);
+        $stmt->bindParam(":token", $token);
+;
         $stmt->execute();
         }    
 

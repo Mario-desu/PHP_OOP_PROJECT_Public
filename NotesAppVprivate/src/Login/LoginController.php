@@ -91,6 +91,7 @@ class LoginController extends AbstractController
             }  else {
                 $message .= "Die Kombination aus Benutzername und Passwort ist falsch!<br>"; 
             }
+            
         }
 
         //Parameter übergeben um sie in der View zu nutzen
@@ -215,7 +216,7 @@ class LoginController extends AbstractController
             $selector = bin2hex(random_bytes(8));//Token 1
             $token =  random_bytes(32);// Token 2
 
-            $url = "https://mariodev.eu/notes/public/index.php/create-new-password?selector=" . $selector . "&validator" . bin2hex($token);
+            $url = "https://mariodev.eu/NotesApp/public/index.php/create-new-password?selector=" . $selector . "&validator=" . bin2hex($token);
 
             $expires = date("U") + 1800; // Ablaufzeit Token 
             $userEmail = $_POST['email'];
@@ -536,13 +537,23 @@ class LoginController extends AbstractController
             $options=["cost"=>12]; 
             $password1=password_hash($password1, PASSWORD_BCRYPT, $options);//überschreiben (was, wie, wie oft)
             
-                  
-            $role="user";   
+            // Default vor Bestätigungsmail-Verifizierung      
+            $role="inactive";   
+
+            
+            //token erzeugen für Bestätigungsmail:
+
+            /*Token generieren, mit bin2hex in hexadezimales Format umwandeln,
+            damit man es im Link verwenden kann*/
+            $selector = bin2hex(random_bytes(8));//Token 1
+            $token =  random_bytes(16);// Token 2
+        
+            $hashedToken = password_hash($token, PASSWORD_DEFAULT);//überschreiben (was, wie, wie oft)
 
             if($ok===true) {
                 //Bestätigungs-Mail
-                $this->loginService->registerMail($email, $firstName);
-                $this->loginRepository->insertUser($lastName, $firstName, $role, $email, $password1);
+                $this->loginService->registerMail($email, $firstName, $selector, $hashedToken);
+                $this->loginRepository->insertUser($lastName, $firstName, $role, $email, $password1, $selector, $hashedToken);
 
             }
 
@@ -577,9 +588,32 @@ class LoginController extends AbstractController
 
     public function verifyUser()
     {
-        $this->render("user/verifyUser", [
-            'message' => $message,
+        if (isset($_GET['id']) && isset($_GET['selector']) && isset($_GET['token'])) {
+            $email = urldecode(base64_decode($_GET['id']));
+            $selector = $_GET['selector'];
+            $token = $_GET['token'];
 
+
+            if (empty($selector) || empty($token)) {
+                echo "Deine Anfrage konnte nicht validiert werden!";
+                    //es wird gecheckt, ob Tokens hexadezimale Token sind:
+            } else if (ctype_xdigit($selector) !== false && ctype_xdigit($token) !== false) {
+                    //set status from "inactive" to "user"
+                    $this->loginRepository->setUserActive($email, $selector, hex2bin($token));
+                
+            }
+
+
+
+
+
+            
+
+        }
+
+
+        $this->render("user/verifyUser", [
+            
         ]);
 
     }

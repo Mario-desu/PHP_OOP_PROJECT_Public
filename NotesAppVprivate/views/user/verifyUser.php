@@ -13,14 +13,14 @@
             }
         }
         ?>
-        <p style = "color: red;"><?php  echo $message ?></p>
+        <!-- <p style = "color: red;"><?php  echo $message ?></p> -->
 
         <form action="login" method="POST">
         <div class="row mb-3">
             <label for="inputEmail3" class="col-sm-12 col-form-label">Email 
             </label>
             <div class="col-sm-12">
-                <input type="email" class="form-control" name="email" value="<?php echo e($email); ?>" id="inputEmail3">
+                <input type="email" class="form-control" name="email" value="" id="inputEmail3">
             </div>
         </div>
         <div class="row mb-3">

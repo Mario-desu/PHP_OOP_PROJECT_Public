@@ -51,7 +51,7 @@ class LoginService
 // Registrierungsmail (bestätigen)
 
 
-    public function registerMail($email, $firstName)
+    public function registerMail($email, $firstName, $selector, $token)
     {
         $mail = new PHPMailer(true);
 
@@ -84,17 +84,27 @@ class LoginService
             //encode email
             $emailEncode = base64_encode(urlencode($email));
 
-            $url = "http://localhost/udemy_php/notes_oop_php/NotesAppVPrivate/public/index.php/verify-user?id=" . $emailEncode . "&token=randomToken";
+        
+
+            $url = "http://localhost/udemy_php/notes_public/NotesAppVPrivate/public/index.php/verify-user?id=" . $emailEncode . "&selector=" . $selector . "&token=" . bin2hex($token);
+
+            //http://localhost/udemy_php/notes_public/NotesAppVPrivate/public/index.php/verify-user?id=
+            //https://mariodev.eu/NotesApp/public/index.php/dashboard/verify-user?id=
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             $mail->CharSet ="UTF-8"; // Umlaute sind dann möglich
             $mail->Subject = '[Notes] Verifiziere bitte deine Mail-Adresse';
-            $mail->Body    = '<p><b>Hallo ' . $firstName . '</b></p><br><br>
+            $mail->Body    = '<p><b>Hallo ' . $firstName . ',</b></p><br><br>
+                              <p>vielen Dank für deine Registrierung bei Smart Notes</p>   
                               <p>Bitte bestätige deine E-Mail-Adresse um die Registrierung abzuschließen.</p><br>
-                              <p>Klicke diesen Link oder kopiere ihn in den Browser in den nächsten 20 Minuten <br><a href= "' . $url .'">' . $url .'</a>.</p>';
+                              <p>Klicke diesen Link oder kopiere ihn in den Browser<br><a href= "' . $url .'">' . $url .'</a></p>
+                              <br>
+                              <p>Dieser Link ist 20 Minuten aktiv</p>
+                              <br>
+                              <p>Liebe Grüße!</p>';
 
-            $mail->AltBody = 'Bitte bestätige deine E-Mail-Adresse um die Registrierung abzuschließen. Bitte kopiere den Link in den Browser https://orf.at.';
+            $mail->AltBody = 'Bitte bestätige deine E-Mail-Adresse um die Registrierung abzuschließen. Bitte kopiere den Link in den Browser' . $url . '.';
 
             $mail->send();
             // echo 'Message has been sent';
