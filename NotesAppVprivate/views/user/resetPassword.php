@@ -6,7 +6,7 @@
 
         <h2>Passwort zurücksetzen</h2>
         <br>
-        <p class="fst-italic">Du bekommst ein E-Mail mit Anweisungen wie man das Passwort zurücksetzt.</p>
+        <p class="fst-italic">Du bekommst eine E-Mail mit Anweisungen wie man das Passwort zurücksetzt.</p>
 
         <?php
         if (isset($_GET["reset"])) {

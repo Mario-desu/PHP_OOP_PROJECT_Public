@@ -21,7 +21,7 @@
                 <input type="password" class="form-control" name="pwdRepeat" placeholder="Neues Passwort wiederholen">                
             </div>
         </div>
-        <button type="submit" name="reset-password-submit" class="btn sub-btn">Passwort zurücksetzen</button>
+        <button type="submit" name="resetPwdSubmit" class="btn sub-btn">Passwort zurücksetzen</button>
 
         </form>
 

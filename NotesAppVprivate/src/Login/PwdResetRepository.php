@@ -9,7 +9,7 @@ class PwdResetRepository extends AbstractRepository
 {
     public function getModelPath()
     {
-        return "App\\Login\\PwdResetRepositoryModel";
+        return "App\\Login\\PwdResetModel";
     }
 
 

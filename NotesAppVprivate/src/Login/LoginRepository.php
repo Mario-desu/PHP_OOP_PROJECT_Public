@@ -122,7 +122,7 @@ class LoginRepository extends AbstractRepository
         $stmt->bindParam(":email", $email);
         $stmt->bindParam(":selector", $selector);
         $stmt->bindParam(":token", $token);
-;
+
         $stmt->execute();
         }    
 

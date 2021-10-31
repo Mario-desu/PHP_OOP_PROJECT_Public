@@ -142,6 +142,76 @@ class LoginService
     }
 
 
+###########################################################
+// Registrierungsmail (bestätigen)
+
+
+public function pwdResetMail($email, $selector, $token)
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        //Server settings
+
+        //Connection data in include_Datei:
+
+        include("../includes/email_connect.php");
+        ################### kommt von include ##############################################
+        // $mail->isSMTP();                                            //Send using SMTP
+        // $mail->Host       = '***********';                     //Set the SMTP server to send through
+        // $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+        // $mail->Username   = '***********';                     //SMTP username
+        // $mail->Password   = '*************';                               //SMTP password                                
+        // //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+        ##########################################################################################
+
+
+
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
+        $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+        //Recipients
+        // $mail->setFrom('****************'); kommt von include
+        $mail->addAddress($email);     //Add a recipient
+
+        
+        
+        //encode email
+        // $emailEncode = base64_encode(urlencode($email));
+
+    
+
+        $url = "http://localhost/udemy_php/notes_public/NotesAppVPrivate/public/index.php/create-new-password?selector=" . $selector . "&validator=" . $token;
+        
+        //für Deployment:
+        // $url = "https://mariodev.eu/NotesApp/public/index.php/create-new-password?selector=" . $selector . "&validator=" . bin2hex($token);
+
+
+
+        //Content
+        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->CharSet ="UTF-8"; // Umlaute sind dann möglich
+        $mail->Subject = '[Notes] Passwort zurücksetzen';
+        $mail->Body    = '<p><b>Hallo!</b></p><br><br>
+                          <p>Wir haben eine Anfrage zur Zurücksetzung des Passworts erhalten. </p>   
+                          <p>Der Link zur Zurücksetzung befindet sich unten. Falls du diese Anfrage nicht geschickt hast, kannst du diese E-mail ignorieren.</p><br>
+                          <p>Klicke diesen Link oder kopiere ihn in den Browser<br><a href= "' . $url .'">' . $url .'</a></p>
+                          <br>
+                          <p>Dieser Link ist 30 Minuten aktiv</p>
+                          <br>
+                          <p>Liebe Grüße!</p>';
+
+        $mail->AltBody = 'Wir haben eine Anfrage zur Zurücksetzung des Passworts erhalten. Bitte kopiere den Link in den Browser' . $url . '.';
+
+        $mail->send();
+        // echo 'Message has been sent';
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+        }
+
+
+
 ##########################################################
 //Logout
 

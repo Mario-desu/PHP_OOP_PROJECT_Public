@@ -201,6 +201,8 @@ class LoginController extends AbstractController
         ]);
     }
 
+
+###########################################################
 ###########################################################
 // 1. Passwort zurücksetzen 
 
@@ -214,12 +216,19 @@ class LoginController extends AbstractController
         /*Token generieren, mit bin2hex in hexadezimales Format umwandeln,
         damit man es im Link verwenden kann*/
             $selector = bin2hex(random_bytes(8));//Token 1
-            $token =  random_bytes(32);// Token 2
+            $token =  bin2hex(random_bytes(32));// Token 2
+            // echo $selector;
+            $encodedToken = base64_encode(urlencode($token));
 
-            $url = "https://mariodev.eu/NotesApp/public/index.php/create-new-password?selector=" . $selector . "&validator=" . bin2hex($token);
+            
+            
+
+            // $url = "http://localhost/udemy_php/notes_public/NotesAppVPrivate/public/index.php/create-new-password?selector=" . $selector . "&validator=" . bin2hex($token);
+            // $url = "https://mariodev.eu/NotesApp/public/index.php/create-new-password?selector=" . $selector . "&validator=" . bin2hex($token);
 
             $expires = date("U") + 1800; // Ablaufzeit Token 
-            $userEmail = $_POST['email'];
+            $userEmail = e($_POST['email']);
+            
 
        ###########################################################     
        /* wenn es einen Eintrag mit dieser E-mail gibt in der DB  wird dieser gelöscht,
@@ -232,30 +241,16 @@ class LoginController extends AbstractController
          
        ###########################################################   
          // 2. Daten in Db eintragen (Pwd-reset-Tabelle)  
-
-            $hashedToken = password_hash($token, PASSWORD_DEFAULT);
+            // $options = ["cost" =>12];
+            // $hashedToken = password_hash($token, PASSWORD_BCRYPT, $options) ;
             
-            $this->pwdResetRepository->insertResetPwdEntry($userEmail, $selector, $hashedToken, $expires);
+            $this->pwdResetRepository->insertResetPwdEntry($userEmail, $selector, $encodedToken, $expires);
 
                    ###########################################################
             //3.Reset-E-mail erstellen:
 
-            $to = $userEmail;
+            $this->loginService->pwdResetMail($userEmail, $selector, $encodedToken);
 
-            $subject = "Zurücksetzung deines Passworts";
-
-            $message = "<p>Wir haben eine Anfrage zur Zurücksetzung des Passworts erhalten. Der Link zur Zurücksetzung befindet sich unten. Falls du diese Anfrage nicht geschickt hast, kannst du diese E-mail ignorieren.</p>";
-
-            $message .= "<p>Hier ist dein Link zur Zurücksetzung deines Passworts: <br>";
-            $message .= "<a href='" . $url . "'>" . $url . "</a><p>";
-
-            $headers = "From: <hartleb@mariodev.eu>\r\n";
-            $headers .= "Reply-To: hartleb@mariodev.eu\r\n";
-            // damit HTML funktioniert:
-            $headers .= "Content-type: text/html\r\n;";
-
-            mail($to, $subject, $message, $headers);
-            
 
             header("location: reset-pw-request?reset=success");
 
@@ -281,20 +276,24 @@ class LoginController extends AbstractController
         $selector = $_GET["selector"];
         $validator = $_GET["validator"];
 
+
+        echo $selector;
+        echo "<br>";
+        echo $validator;
+
         if (empty($selector) || empty($validator)) {
             echo "Deine Anfrage konnte nicht validiert werden!";
-        } else {
+        } else if (ctype_xdigit($selector) !== false && ctype_xdigit($validator) !== false) {
             //es wird gecheckt, ob Tokens hexadezimale Token sind:
-            if (ctype_xdigit($selector) !== false && ctype_xdigit($validator) !== false) {
 
-            }
+ 
         }
-
 
         $this->render("user/createNewPassword", [
             'selector' => $selector,
             'validator' => $validator
         ]);
+
     }
 
 ###########################################################
@@ -302,38 +301,59 @@ class LoginController extends AbstractController
 
     public function resetPasswordAction()
     {
-        if (isset($_POST['resetRequestSubmit'])) {
-            $selector = $_POST['selector'];
-            $validator = $_POST['validator'];
-            $password = $_POST['password'];
-            $pwdRepeat = $_POST['pwdRepeat'];
+        if (isset($_POST['resetPwdSubmit'])) {
+            $selector = e($_POST['selector']);
+            $validator = e($_POST['validator']);          
+            $password = e($_POST['pwd']);
+            $pwdRepeat = e($_POST['pwdRepeat']);
+            echo $selector;
 
             if (empty($password) || empty($pwdRepeat)) {
                 header("Location: reset-pw-request?newpwd=empty");
-                die();
+                exit();
             } else if ($password != $pwdRepeat) {
                 header("Location: reset-pw-request?newpwd=pwdnotequal");
-                die();
+                exit();
             }
 
             $currentDate = date("U");
 
 
             $result = $this->pwdResetRepository->getResetSelector($selector, $currentDate);
+            var_dump($result);
 
 
-            $tokenBinary = hex2bin($validator);
-            $tokenCheck = password_verify($tokenBinary, $result['pwdResetToken']);
+            // $tokenBinary = hex2bin($validator);
+            $tokenDecoded = urldecode(base64_decode($validator));
+            echo "<br>";
+            echo $tokenDecoded;
+
+            $tokenCheck = "";
+
+            if ($tokenDecoded === urldecode(base64_decode($result['pwdResetToken']))) {
+                $tokenCheck = true;
+            } else {
+                $tokenCheck = false;
+            }
+            // $tokenCheck = password_verify($validator, $result['pwdResetToken']);
+            // $tokenCheck = true;
+            echo "<br>";
+            var_dump($tokenCheck);
+            echo "<br>";
+            
+            // exit();
 
             if ($tokenCheck === false) {
                 echo "Du musst deine Zurücksetzungsanfrage wiederholen";
-                die();
+                exit();
             } else if ($tokenCheck === true) {
                 $tokenEmail = $result['pwdResetEmail'];
+                echo $tokenEmail;
 
                 $newPwdHash = password_hash($password, PASSWORD_DEFAULT);
+           
                 $this->loginRepository->updatePassword($newPwdHash, $tokenEmail);
-                //damit nicht mehrere Token vom selben USer in DB existiere:
+                //damit nicht mehrere Token vom selben USer in DB existieren:
 
                 $this->pwdResetRepository->deletePwdResetEntry($tokenEmail);
                 header("Location: login?newpwd=passwordupdated");
@@ -348,7 +368,7 @@ class LoginController extends AbstractController
     }
 
 
-
+###########################################################
 ###########################################################
 // normaler User kann sein Konto löschen, Admin alle
 
